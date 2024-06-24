@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Layui CSS -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/layui/2.6.8/css/layui.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .modal-body a{
+            cursor: pointer;
+        }
+        .imgnumSpan{
+            position: relative;
+            left: 20px;
+        }
+        [v-cloak]{
+            display:none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" style="margin: 20px" v-cloak>
+
+    <div style="display: flex;justify-content: space-around">
+        <h1>欢迎使用图片上传小程序</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">上传图片</button>
+        <button class="btn btn-danger" @click="deleteAll">删除所有</button>
+    </div>
+
+    <div>
+        <span class="imgnumSpan">图片数量：{{ imglist.length }}</span>
+        <span v-if="isShowInfo" class="imgnumSpan">上传成功，数据将在：{{ time_to_load }}秒后加载</span>
+    </div>
+
+
+    <div class="grid-container" id="imageGrid">
+        <div v-for="(item,index) in imglist" :key="index" class="image-item">
+            <img :src="item.url" alt="billie eilish" @dblclick="showImg(item.url)">
+        </div>
+    </div>
+
+
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框内容 -->
+                <div class="modal-header">
+                    <h5 class="modal-title">图片上传</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!--  :auto-upload="false":不自动上传，需要手动点击上传按钮
+                          name="files" ： 上传的键名
+                          :multiple="true"： 允许多选
+                          :on-preview="handlePreview"： 点击预览图片
+                          :on-remove="handleRemove"： 点击删除图片
+                          :file-list="fileList"： 上传的文件列表
+                           ref="upload": 上传组件的引用->使 this.$refs.upload 生效
+                      -->
+                    <el-upload
+                            class="upload-demo"
+                            ref="upload"
+                            action="/upload"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :file-list="fileList"
+                            :auto-upload="false"
+                            name="files"
+                            :multiple="true"
+                            :on-success="handleUploadSuccess"
+                            :on-error="handleUploadError"
+                            :on-change="handleUploadChange">
+                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">
+                            上传到服务器
+                        </el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        <div slot="tip">
+                            <span style="font-size: 12px;color: chocolate;">文件数量:{{ fileNum }}</span>
+                        </div>
+                    </el-upload>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-warning" @click="clearSelected">清除所选</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h2>公司信息</h2>
+                <p>我们致力于提供最优质的服务，客户的满意是我们的最高追求。</p>
+                <p>&copy; 2024 Your Company. All rights reserved.</p>
+            </div>
+            <div class="footer-section">
+                <h2>快速导航</h2>
+                <ul>
+                    <li><a href="#home">首页</a></li>
+                    <li><a href="#about">关于我们</a></li>
+                    <li><a href="#services">服务</a></li>
+                    <li><a href="#contact">联系我们</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h2>关注我们</h2>
+                <div class="social-icons">
+                    <a href="#"><img src="facebook-icon.png" alt="Facebook"></a>
+                    <a href="#"><img src="twitter-icon.png" alt="Twitter"></a>
+                    <a href="#"><img src="linkedin-icon.png" alt="LinkedIn"></a>
+                    <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+
+<!-- jQuery -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Vue.js -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<!-- Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- Layui -->
+<script src="https://cdn.bootcdn.net/ajax/libs/layui/2.6.8/layui.min.js"></script>
+<!-- Bootstrap -->
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
