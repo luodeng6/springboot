@@ -20,8 +20,10 @@ public class FileUploadController {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
+
     @Value("${homeurl}")
     private String homeurl;
+
     @Autowired
     private ImgMapper imgMapper; ;
 
@@ -56,6 +58,14 @@ public class FileUploadController {
             try {
                 // 获取文件名
                 String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+                //文件名处理
+                fileName = fileName.replaceAll("[\\\\/:*?\"<>|#%$()]", "");
+                // 获取时间戳
+                String timestamp = String.valueOf(System.currentTimeMillis());
+                // 文件名加时间戳
+                fileName = timestamp + "_" + fileName;
+                // 检查文件名是否合法
+
 
                 // 检查目录是否存在，如果不存在则创建
                 Path uploadPath = Paths.get(uploadDir);
@@ -64,7 +74,7 @@ public class FileUploadController {
                     Files.createDirectories(uploadPath);
                 }
 
-                // 写入文件到指定路径
+                // 写入文件到指定路径->文件名
                 Files.copy(file.getInputStream(), uploadPath.resolve(fileName));
 
                 // 示例中的 uploadPath 需要根据实际情况修改

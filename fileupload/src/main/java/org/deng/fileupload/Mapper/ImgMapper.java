@@ -15,4 +15,10 @@ public interface ImgMapper {
 
     // 删除图片
     void deleteAllImg();
+
+    //删除非图片、视频文件->粗略认为文件名不包含.jpg、jpeg、png、webp和.mp4的为非图片、视频文件
+    boolean deleteNotImgOrVideo();
+
+    // 获取所有非图片、视频文件->测试用
+    List<Img> getAllNotImgOrVideo();
 }

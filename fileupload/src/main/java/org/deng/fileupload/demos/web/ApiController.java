@@ -2,16 +2,20 @@ package org.deng.fileupload.demos.web;
 
 import org.deng.fileupload.Mapper.ImgMapper;
 import org.deng.fileupload.Mapper.UserMapper;
+import org.deng.fileupload.Pojo.Img;
 import org.deng.fileupload.Pojo.Result;
 import org.deng.fileupload.Pojo.User;
 import org.deng.fileupload.Service.ImgServiceIMP;
 import org.deng.fileupload.Service.ImgService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -81,7 +85,6 @@ public class ApiController {
     }
 
 
-
     /**
      * 登录接口
      * 处理登录请求，返回登录结果
@@ -111,6 +114,61 @@ public class ApiController {
             return new Result("登录成功", 200, true, "POST");
         } else {
             return new Result("登录失败，请检查用户名和密码是否正确！", 200, false, "POST");
+        }
+    }
+
+    /**
+     * 删除所有非图片和视频的文件->包括数据库里的和本地文件
+     *
+     * @return 返回删除结果
+     */
+    @Value("${file.upload-dir}")//读取配置文件中的上传目录
+    private String uploadDir;
+
+    @RequestMapping(value = "/deleteAllFilesNotImgNotVideo", method = RequestMethod.GET)
+    public Map<String, Object> deleteAllFilesNotImgNotVideo() {
+        try {
+            List<Img> NotImgOrVideoList = imgMapper.getAllNotImgOrVideo();
+            System.out.println("非图片和视频文件列表：");
+            System.out.println(NotImgOrVideoList);
+            System.out.println("非图片和视频文件列表长度：" + NotImgOrVideoList.size());
+
+            //调用ImgMapper的deleteAll方法，删除所有图片
+            imgMapper.deleteNotImgOrVideo();
+            int deleteCount = 0;
+
+            for (Img img : NotImgOrVideoList) {
+                //删除本地文件
+                try {
+                    String filePath = uploadDir +"/"+ img.getName();
+                    System.out.println("删除文件路径：" + filePath);
+                    File file = new File(filePath);
+                    if (file.delete()) {
+                        deleteCount++;
+                    }else {
+                        System.out.println("删除失败：文件不存在！->" + filePath);
+                    }
+                }catch (Exception e){
+                    System.out.println("删除失败：其他原因！->" + e.getMessage());
+                }
+            }
+
+
+            Map<String, Object> resultMap = new HashMap<>();
+
+            resultMap.put("result", true);
+            resultMap.put("message", "删除成功");
+            resultMap.put("NotImgOrVideoListdata", NotImgOrVideoList);
+            resultMap.put("NotImgOrVideoListLength", NotImgOrVideoList.size());
+            resultMap.put("deleteCountSuccess", deleteCount);
+            return resultMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("result", false);
+            resultMap.put("message", "删除失败,内部错误");
+            resultMap.put("data", e.getMessage());
+            return resultMap;
         }
     }
 

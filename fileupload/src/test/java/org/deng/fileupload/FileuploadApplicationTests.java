@@ -18,7 +18,7 @@ class FileuploadApplicationTests {
     //测试图片增加接口
     @Test
     void CheckAddImg() {
-        Img img = new Img("http://www.baidu.com",  new Date(1234567890000L), "test.jpg",1024);
+        Img img = new Img("http://www.baidu.com", new Date(1234567890000L), "test.jpg", 1024);
 
         System.out.println(imgMapper.addImg(img));
     }
@@ -32,4 +32,18 @@ class FileuploadApplicationTests {
         }
     }
 
+    //测试 删除非图片视频文件
+    @Test
+    void CheckDeleteImgAndvieo() {
+        System.out.println(imgMapper.deleteNotImgOrVideo());
+    }
+
+    // 测试获取非图片视频文件
+    @Test
+    void CheckGetNotImgOrVideo() {
+        List<Img> imgs = imgMapper.getAllNotImgOrVideo();
+        for (Img img : imgs) {
+            System.out.println(img);
+        }
+    }
 }

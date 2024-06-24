@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 命名空间  namespace里是接口类名-->
 <mapper namespace="org.deng.fileupload.Mapper.ImgMapper">
+
     <!--    插入一张图片
            id  属性指定了这个SQL语句对应的方法名称addImg。
            parameterType  属性指定了参数类型Img的全限定名。
@@ -16,7 +17,30 @@
 
     <!--    删除所有图片-->
     <delete id="deleteAllImg">
-        delete from img
+        delete
+        from img
     </delete>
+
+    <!--    删除所有非图片和视频文件-->
+    <delete id="deleteNotImgOrVideo">
+        delete
+        from img
+        where name not like '%.jpg'
+          and name not like '%.png'
+          and name not like '%.gif'
+          and name not like '%.webp'
+          and name not like '%.jpeg'
+          and name not like '%.mp4'
+    </delete>
+    <select id="getAllNotImgOrVideo" resultType="org.deng.fileupload.Pojo.Img">
+        select *
+        from img
+        where name not like '%.jpg'
+          and name not like '%.png'
+          and name not like '%.gif'
+          and name not like '%.webp'
+          and name not like '%.jpeg'
+          and name not like '%.mp4'
+    </select>
 
 </mapper>

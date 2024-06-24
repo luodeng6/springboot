@@ -154,7 +154,7 @@ new Vue({
             return 'unknown';
         },
         isImage(filename) {
-            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'];
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg','.jfif'];
             const fileExtension = filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2).toLowerCase();
             return imageExtensions.includes(`.${fileExtension}`);
         },
