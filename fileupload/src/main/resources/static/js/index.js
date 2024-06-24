@@ -103,7 +103,7 @@ new Vue({
                 this.load_fun();
                 this.$message({
                     message: '数据删除成功',
-                    type:'success'
+                    type: 'success'
                 });
             }).catch((error) => {
                 console.log("数据删除失败:");
@@ -131,13 +131,45 @@ new Vue({
                 this.getalldata();
                 this.isShowInfo = false;
             }, 3000)
+        },
+        getFileType(filename) {
+            // 定义图片和视频的扩展名数组
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'];
+            const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv', '.webm', '.mpeg', '.mpg'];
+
+            // 提取文件名的扩展名
+            const fileExtension = filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2).toLowerCase();
+
+            // 判断扩展名是否在图片扩展名数组中
+            if (imageExtensions.includes(`.${fileExtension}`)) {
+                return 'image';
+            }
+
+            // 判断扩展名是否在视频扩展名数组中
+            if (videoExtensions.includes(`.${fileExtension}`)) {
+                return 'video';
+            }
+
+            // 如果都不匹配，返回未知类型
+            return 'unknown';
+        },
+        isImage(filename) {
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'];
+            const fileExtension = filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2).toLowerCase();
+            return imageExtensions.includes(`.${fileExtension}`);
+        },
+        isVideo(filename) {
+            const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv', '.webm', '.mpeg', '.mpg'];
+            const fileExtension = filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2).toLowerCase();
+            return videoExtensions.includes(`.${fileExtension}`);
         }
     },
 
 
     created() {
         this.getalldata();
-    },
+    }
+    ,
 
 })
 ;
