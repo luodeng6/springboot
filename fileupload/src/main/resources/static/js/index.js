@@ -1,4 +1,4 @@
-//关闭右键默认
+//关闭浏览器右键默认
 document.addEventListener('contextmenu', function (event) {
     event.preventDefault();
 });
@@ -6,14 +6,19 @@ document.addEventListener('contextmenu', function (event) {
 new Vue({
     el: '#app',
     data: {
-        imglist: [], fileList: [], successNum: 0,// 成功上传数量
-        fileNum: 0, isShowInfo: false, time_to_load: 3,
-        show: false,
+        imglist: [], 
+        fileList: [], 
+        successNum: 0,// 成功上传数量
+        fileNum: 0,
+        isShowInfo: false, 
+        time_to_load: 3,
+        show: false,//用于加载element ui的加载效果
     },
 
     methods: {
         downloadImg(id) {
             console.log(id);
+            // 调用文件下载函数
             this.downloadMethod(id);
         },
 
