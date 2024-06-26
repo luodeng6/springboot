@@ -1,4 +1,5 @@
 package org.deng.fileupload.Pojo;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,12 +16,14 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Img{
+public class Img {
+    private String descript;
     private Integer id;
     private String url;
     private Date uploadtime;
     private String name;
     private Integer size;
+    private String string;
 
     // 自定义构造函数
     public Img(String fileUrl, Date date, String fileName, int size) {
@@ -28,6 +31,14 @@ public class Img{
         this.uploadtime = date;
         this.name = fileName;
         this.size = size;
+    }
+
+    public Img(String fileUrl, Date date, String fileName, int size, String descript) {
+        this.url = fileUrl;
+        this.uploadtime = date;
+        this.name = fileName;
+        this.size = size;
+        this.descript = descript;
     }
     /*
      构造函数特点：

@@ -5,10 +5,16 @@ import org.deng.fileupload.Mapper.UserMapper;
 import org.deng.fileupload.Pojo.Img;
 import org.deng.fileupload.Pojo.Result;
 import org.deng.fileupload.Pojo.User;
-import org.deng.fileupload.Service.ImgServiceIMP;
+import org.deng.fileupload.Service.IMP.ImgServiceIMP;
 import org.deng.fileupload.Service.ImgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +23,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -125,7 +132,7 @@ public class ApiController {
     @Value("${file.upload-dir}")//读取配置文件中的上传目录
     private String uploadDir;
 
-    @RequestMapping(value = "/deleteAllFilesNotImgNotVideo", method = RequestMethod.GET)
+    @GetMapping(value = "/deleteAllFilesNotImgNotVideo")
     public Map<String, Object> deleteAllFilesNotImgNotVideo() {
         try {
             List<Img> NotImgOrVideoList = imgMapper.getAllNotImgOrVideo();
@@ -138,21 +145,22 @@ public class ApiController {
             int deleteCount = 0;
 
             for (Img img : NotImgOrVideoList) {
-                //删除本地文件
+
                 try {
-                    String filePath = uploadDir +"/"+ img.getName();
+                    // 构建文件路径
+                    String filePath = uploadDir + "/" + img.getName();
                     System.out.println("删除文件路径：" + filePath);
                     File file = new File(filePath);
+                    //删除本地文件
                     if (file.delete()) {
                         deleteCount++;
-                    }else {
+                    } else {
                         System.out.println("删除失败：文件不存在！->" + filePath);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     System.out.println("删除失败：其他原因！->" + e.getMessage());
                 }
             }
-
 
             Map<String, Object> resultMap = new HashMap<>();
 
@@ -172,5 +180,148 @@ public class ApiController {
         }
     }
 
+    /**
+     * 分页获取图片信息
+     *
+     * @param page 页码
+     *             默认为1
+     * @param size 每页显示数量
+     *             默认为10
+     * @return 返回图片信息
+     */
+    @GetMapping(value = "/getSomgImgPages")
+    public Map<String, Object> getSomgImgPages(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        try {
+            Map<String, Object> resultMap = new HashMap<>();
+
+            ImgService imgService = new ImgServiceIMP();
+
+            //获取所有图片信息
+            List<Img> AllImgList = imgMapper.getAllImg();
+            //获取分页数据
+            List<Img> CurrentImgList = imgService.paginate(AllImgList, page, size);
+
+            resultMap.put("result", true);
+            resultMap.put("message", "获取成功");
+            resultMap.put("totalSize", AllImgList.size());
+            resultMap.put("getSize", CurrentImgList.size());
+            resultMap.put("data", CurrentImgList);
+            return resultMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("result", false);
+            resultMap.put("message", "获取失败,内部错误");
+            resultMap.put("data", e.getMessage());
+            resultMap.put("Size", size);
+            resultMap.put("Page", page);
+            return resultMap;
+        }
+    }
+
+    // 测试练手的接口
+
+    /**
+     * 把数据库里所有图片的链接由localhost改为指定的ip
+     *
+     * @param ip 指定的ip
+     * @return 返回修改结果
+     */
+    @GetMapping(value = "/ChangeImgNameLocalhostToIp")
+    public Map<String, Object> ChangeImgNameLocalhostToIp(@RequestParam(value = "ip") String ip) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            //获取所有图片信息
+            List<Img> AllImgList = imgMapper.getAllImg();
+            //修改图片链接
+            for (Img img : AllImgList) {
+                img.setUrl(img.getUrl().replace("localhost", ip));
+                img.setUrl(img.getUrl().replace("127.0.0.1",ip));
+                imgMapper.updateImg(img);
+            }
+
+            resultMap.put("result", true);
+            resultMap.put("message", "修改成功");
+            return resultMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", false);
+            resultMap.put("message", "修改失败,内部错误");
+            resultMap.put("data", e.getMessage());
+            return resultMap;
+        }
+    }
+
+
+
+   /**
+     * 路径参数测试接口
+     * @param id 图片id
+     * @return 返回图片信息
+     */
+    @GetMapping(value = "/getImgById/{id}")
+    public Map<String, Object> getImgById(@PathVariable("id") int id) {
+        try {
+            Map<String, Object> resultMap = new HashMap<>();
+            //调用ImgMapper的selectById方法，获取指定id的图片信息
+            Img img = imgMapper.getImgById(id);
+            resultMap.put("result", true);
+            resultMap.put("message", "获取成功");
+            resultMap.put("data", img);
+            return resultMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("result", false);
+            resultMap.put("message", "获取失败,内部错误");
+            resultMap.put("data", e.getMessage());
+            return resultMap;
+        }
+    }
+
+
+    /**
+     * 路径参数测试接口->实现下载功能
+     * @param id 图片id
+     * @return 直接返回图片文件
+     */
+    @GetMapping(value = "/getImgFileById/{id}")
+    public ResponseEntity<Resource> getImgFileById(@PathVariable("id") int id) {
+        try {
+            // 调用 ImgMapper 的 getImgById 方法，获取指定 id 的图片信息
+            Optional<Img> optionalImg = Optional.ofNullable(imgMapper.getImgById(id));
+
+            // 判断图片是否存在
+            if (optionalImg.isPresent()) {
+                Img img = optionalImg.get();
+
+                File imgFile = new File(uploadDir + "/" + img.getName());
+
+                if (imgFile.exists()) {
+                    Resource resource = new FileSystemResource(imgFile);
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + imgFile.getName() + "\"");
+                    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE);
+
+                    return ResponseEntity.ok()
+                            .headers(headers)
+                            .contentLength(imgFile.length())
+                            .contentType(MediaType.parseMediaType("image/jpeg"))
+                            .body(resource);
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(null);
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }
+
 

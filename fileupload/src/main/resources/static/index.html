@@ -21,121 +21,142 @@
         [v-cloak]{
             display:none;
         }
+        .transition-box {
+            /*margin-bottom: 10px;*/
+            /*width: 200px;*/
+            /*height: 100px;*/
+            /*border-radius: 4px;*/
+            /*background-color: #409EFF;*/
+            /*text-align: center;*/
+            /*color: #fff;*/
+            /*padding: 40px 20px;*/
+            /*box-sizing: border-box;*/
+            /*margin-right: 20px;*/
+        }
     </style>
 </head>
 <body>
 
 <div id="app" style="margin: 20px" v-cloak>
-
-    <div style="display: flex;justify-content: space-around">
-        <h1>欢迎使用图片上传小程序</h1>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">上传图片</button>
-        <button class="btn btn-danger" @click="deleteAll">删除所有</button>
-    </div>
-
     <div>
-        <span class="imgnumSpan">图片数量：{{ imglist.length }}</span>
-        <span v-if="isShowInfo" class="imgnumSpan">上传成功，数据将在：{{ time_to_load }}秒后加载</span>
-    </div>
+        <div >
+            <transition name="el-zoom-in-center">
+                <div v-show="show" class="transition-box">
+                    <div style="display: flex;justify-content: space-around">
+                        <h1>欢迎使用图片上传小程序</h1>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">上传图片</button>
+                        <button class="btn btn-danger" @click="deleteAll">删除所有</button>
+                        <button class="btn btn-warning" @click="deleteAllNotVideoAndImage">删除所有非视频图片文件</button>
+                    </div>
+
+                    <div>
+                        <span class="imgnumSpan">图片数量：{{ imglist.length }}</span>
+                        <span v-if="isShowInfo" class="imgnumSpan">上传成功，数据将在：{{ time_to_load }}秒后加载</span>
+                    </div>
 
 
-<!--    图片展示区-->
-    <div class="grid-container" id="imageGrid">
-        <div  v-if="isImage(item.name)||isVideo(item.name)" v-for="(item,index) in imglist" :key="index" class="image-item">
+                    <!--    图片展示区-->
+                    <div class="grid-container" id="imageGrid">
+                        <div  v-if="isImage(item.name)||isVideo(item.name)" v-for="(item,index) in imglist" :key="index" class="image-item">
 
-            <img v-if="isImage(item.name)" :src="item.url" alt="billie eilish" @dblclick="showImg(item.url)">
+                            <img  @contextmenu="downloadImg(item.id)" v-if="isImage(item.name)" :src="item.url" alt="billie eilish" @dblclick="showImg(item.url)">
 
-            <video  v-else style="width: 100%;height: 100%;" controls>
-                <source :src="item.url" type="video/mp4">
-            </video>
-        </div>
-    </div>
-
-
-    <!-- 模态框 -->
-    <div id="myModal" class="modal fade">
-        <div class="modal-dialog">
-            <!-- 模态框内容 -->
-            <div class="modal-content">
-                <!--模态框标题-->
-                <div class="modal-header">
-                    <h5 class="modal-title">图片上传</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <!-- 模态框内容 -->
-                <div class="modal-body">
-                    <!--  :auto-upload="false":不自动上传，需要手动点击上传按钮
-                          name="files" ： 上传的键名，服务器接收的键名
-                          :multiple="true"： 允许多选
-                          :on-preview="handlePreview"： 点击预览图片
-                          :on-remove="handleRemove"： 点击删除图片
-                          :file-list="fileList"： 上传的文件列表
-                           ref="upload": 上传组件的引用->使 this.$refs.upload 生效
-                           :on-change-> 上传文件改变时触发的事件
-                      -->
-                    <el-upload
-                            class="upload-demo"
-                            ref="upload"
-                            action="/upload"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :file-list="fileList"
-                            :auto-upload="false"
-                            name="files"
-                            :multiple="true"
-                            :on-success="handleUploadSuccess"
-                            :on-error="handleUploadError"
-                            :on-change="handleUploadChange">
-                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">
-                            上传到服务器
-                        </el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-                        <div slot="tip">
-                            <span style="font-size: 12px;color: chocolate;">文件数量:{{ fileNum }}</span>
+                            <video  v-else style="width: 100%;height: 100%;" controls>
+                                <source :src="item.url" type="video/mp4">
+                            </video>
                         </div>
-                    </el-upload>
+                    </div>
+
+
+                    <!-- 模态框 -->
+                    <div id="myModal" class="modal fade">
+                        <div class="modal-dialog">
+                            <!-- 模态框内容 -->
+                            <div class="modal-content">
+                                <!--模态框标题-->
+                                <div class="modal-header">
+                                    <h5 class="modal-title">图片上传</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <!-- 模态框内容 -->
+                                <div class="modal-body">
+                                    <!--  :auto-upload="false":不自动上传，需要手动点击上传按钮
+                                          name="files" ： 上传的键名，服务器接收的键名
+                                          :multiple="true"： 允许多选
+                                          :on-preview="handlePreview"： 点击预览图片
+                                          :on-remove="handleRemove"： 点击删除图片
+                                          :file-list="fileList"： 上传的文件列表
+                                           ref="upload": 上传组件的引用->使 this.$refs.upload 生效
+                                           :on-change-> 上传文件改变时触发的事件
+                                      -->
+                                    <el-upload
+                                            class="upload-demo"
+                                            ref="upload"
+                                            action="/upload"
+                                            :on-preview="handlePreview"
+                                            :on-remove="handleRemove"
+                                            :file-list="fileList"
+                                            :auto-upload="false"
+                                            name="files"
+                                            :multiple="true"
+                                            :on-success="handleUploadSuccess"
+                                            :on-error="handleUploadError"
+                                            :on-change="handleUploadChange">
+                                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">
+                                            上传到服务器
+                                        </el-button>
+                                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                                        <div slot="tip">
+                                            <span style="font-size: 12px;color: chocolate;">文件数量:{{ fileNum }}</span>
+                                        </div>
+                                    </el-upload>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn btn-warning" @click="clearSelected">清除所选</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                    <footer class="footer">
+                        <div class="footer-container">
+                            <div class="footer-section">
+                                <h2>公司信息</h2>
+                                <p>我们致力于提供最优质的服务，客户的满意是我们的最高追求。</p>
+                                <p>&copy; 2024 Your Company. All rights reserved.</p>
+                            </div>
+                            <div class="footer-section">
+                                <h2>快速导航</h2>
+                                <ul>
+                                    <li><a href="#home">首页</a></li>
+                                    <li><a href="#about">关于我们</a></li>
+                                    <li><a href="#services">服务</a></li>
+                                    <li><a href="#contact">联系我们</a></li>
+                                </ul>
+                            </div>
+                            <div class="footer-section">
+                                <h2>关注我们</h2>
+                                <div class="social-icons">
+                                    <a href="#"><img src="img/QQ.png" alt="QQ"></a>
+                                    <a href="#"><img src="twitter-icon.png" alt="Twitter"></a>
+                                    <a href="#"><img src="linkedin-icon.png" alt="LinkedIn"></a>
+                                    <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-warning" @click="clearSelected">清除所选</button>
-                </div>
-            </div>
+            </transition>
         </div>
     </div>
 
-
-
-
-
-
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h2>公司信息</h2>
-                <p>我们致力于提供最优质的服务，客户的满意是我们的最高追求。</p>
-                <p>&copy; 2024 Your Company. All rights reserved.</p>
-            </div>
-            <div class="footer-section">
-                <h2>快速导航</h2>
-                <ul>
-                    <li><a href="#home">首页</a></li>
-                    <li><a href="#about">关于我们</a></li>
-                    <li><a href="#services">服务</a></li>
-                    <li><a href="#contact">联系我们</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h2>关注我们</h2>
-                <div class="social-icons">
-                    <a href="#"><img src="facebook-icon.png" alt="Facebook"></a>
-                    <a href="#"><img src="twitter-icon.png" alt="Twitter"></a>
-                    <a href="#"><img src="linkedin-icon.png" alt="LinkedIn"></a>
-                    <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
-                </div>
-            </div>
-        </div>
-    </footer>
 
 </div>
 

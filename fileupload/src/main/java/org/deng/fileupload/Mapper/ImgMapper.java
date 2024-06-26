@@ -21,4 +21,11 @@ public interface ImgMapper {
 
     // 获取所有非图片、视频文件->测试用
     List<Img> getAllNotImgOrVideo();
+
+    //修改图片信息->自动映射变量
+    boolean updateImg(Img img);
+
+    // 通过id 获取一个图片
+    Img getImgById(int id);
+
 }

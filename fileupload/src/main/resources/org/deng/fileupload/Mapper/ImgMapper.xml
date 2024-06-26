@@ -5,23 +5,28 @@
 <!-- 命名空间  namespace里是接口类名-->
 <mapper namespace="org.deng.fileupload.Mapper.ImgMapper">
 
-    <!--    插入一张图片
+    <!-- 插入一张图片
            id  属性指定了这个SQL语句对应的方法名称addImg。
            parameterType  属性指定了参数类型Img的全限定名。
            useGeneratedKeys="true"和keyProperty="id"  属性用于获取数据库生成的主键值并赋值给Img对象的id字段。
        -->
     <insert id="addImg" parameterType="org.deng.fileupload.Pojo.Img">
-        insert into img(url, uploadtime, name, size)
-        VALUES (#{url}, #{uploadtime}, #{name}, #{size})
+        insert into img(url, uploadtime, name, size, descript)
+        VALUES (#{url}, #{uploadtime}, #{name}, #{size},#{descript})
     </insert>
 
-    <!--    删除所有图片-->
+    <!--这里也用的了映射-->
+    <update id="updateImg">
+        update img set url = #{url}  where id = #{id}
+    </update>
+
+    <!--删除所有图片-->
     <delete id="deleteAllImg">
         delete
         from img
     </delete>
 
-    <!--    删除所有非图片和视频文件-->
+    <!--删除所有非图片和视频文件-->
     <delete id="deleteNotImgOrVideo">
         delete
         from img
@@ -42,5 +47,12 @@
           and name not like '%.jpeg'
           and name not like '%.mp4'
     </select>
+
+
+    <!--根据id查询图片-->
+    <select id="getImgById" resultType="org.deng.fileupload.Pojo.Img">
+        select * from img where id = #{id}
+    </select>
+
 
 </mapper>

@@ -1,6 +1,8 @@
 package org.deng.fileupload.demos.web;
 import org.deng.fileupload.Mapper.ImgMapper;
 import org.deng.fileupload.Pojo.Img;
+import org.deng.fileupload.Service.HttpAPiService;
+import org.deng.fileupload.Service.IMP.HttpApiServiceIMP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -8,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,14 +23,14 @@ public class FileUploadController {
     private String uploadDir;
 
     @Value("${homeurl}")
-    private String homeurl;
+    private String homeUrl;
 
     @Autowired
-    private ImgMapper imgMapper; ;
+    private ImgMapper imgMapper;
 
 
     @PostMapping("/upload")
-    public Map<String, Object> multipleFileUpload(@RequestParam("files") MultipartFile[] files) {
+    public Map<String, Object> multipleFileUpload(@RequestParam("files") MultipartFile[] files) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Object>> fileResults = new ArrayList<>();
@@ -45,6 +46,14 @@ public class FileUploadController {
         //输出文件数
         System.out.println("文件数："+files.length);
         long totalSize = 0;
+
+        // 检查目录是否存在，如果不存在则创建
+        Path uploadPath = Paths.get(uploadDir);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
         // 处理每一个文件
         for (MultipartFile file : files) {
             Map<String, Object> fileResult = new HashMap<>();
@@ -64,21 +73,18 @@ public class FileUploadController {
                 String timestamp = String.valueOf(System.currentTimeMillis());
                 // 文件名加时间戳
                 fileName = timestamp + "_" + fileName;
-                // 检查文件名是否合法
 
 
-                // 检查目录是否存在，如果不存在则创建
-                Path uploadPath = Paths.get(uploadDir);
 
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                // 写入文件到指定路径->文件名
+                /*  写入文件到指定路径->文件名
+                    resolve(fileName) 是一种用于构建文件路径的方法。它通常用于文件上传或路径操作中，
+                    以确保生成的路径是规范化的、易于管理的，并且避免手动拼接路径字符串可能引起的错误。
+                 */
                 Files.copy(file.getInputStream(), uploadPath.resolve(fileName));
 
+
                 // 示例中的 uploadPath 需要根据实际情况修改
-                String fileUrl = homeurl + "upload/" + fileName;
+                String fileUrl = homeUrl + "upload/" + fileName;
                 fileResult.put("message", "文件上传成功！");
                 fileResult.put("url", fileUrl);
                 fileResult.put("result", true);
@@ -86,7 +92,15 @@ public class FileUploadController {
                 fileResult.put("fileName", fileName);
                 fileResult.put("fileStyle", file.getContentType());
 
-                imgMapper.addImg(new Img(fileUrl, new Date(System.currentTimeMillis()), fileName, (int) file.getSize()));
+                // 调用接口 获取图片标题描述
+                HttpAPiService httpAPiService = new HttpApiServiceIMP();
+
+                Map<String, Object> DataMap = httpAPiService.OneDayOneSay();
+                Map<String, Object> ResultMap = (Map<String, Object>) DataMap.get("result");
+                String desc = (String) ResultMap.get("content");
+
+
+                imgMapper.addImg(new Img(fileUrl, new Date(System.currentTimeMillis()), fileName, (int) file.getSize(),desc));
                 totalSize += file.getSize();
             } catch (IOException e) {
                 e.printStackTrace();
