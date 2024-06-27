@@ -1,7 +1,10 @@
 package org.deng.many_algorithms.Service;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
@@ -28,4 +31,7 @@ public interface ExcelService {
      */
     List<Map<String, String>> readExcelMap(String filePath) throws IOException;
 
+
+    List<Map<String, String>> readExcelMapFromFile(File file) throws IOException, InvalidFormatException;
+    List<Map<String, String>>  readExcelMapFromMultipartFile(MultipartFile multipartFile) throws IOException;
 }

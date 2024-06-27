@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace=".dao.TestinfoDao">
+
+    <resultMap type=".entity.Testinfo" id="TestinfoMap">
+        <result property="考试时间" column="考试时间" jdbcType="VARCHAR"/>
+        <result property="开课学院" column="开课学院" jdbcType="VARCHAR"/>
+        <result property="课程名称" column="课程名称" jdbcType="VARCHAR"/>
+        <result property="教学班名称" column="教学班名称" jdbcType="VARCHAR"/>
+        <result property="班级组成" column="班级组成" jdbcType="VARCHAR"/>
+        <result property="任课教师" column="任课教师" jdbcType="VARCHAR"/>
+        <result property="考试方式" column="考试方式" jdbcType="VARCHAR"/>
+        <result property="考场校区" column="考场校区" jdbcType="VARCHAR"/>
+        <result property="选课人数" column="选课人数" jdbcType="INTEGER"/>
+        <result property="已排人数" column="已排人数" jdbcType="INTEGER"/>
+        <result property="考场" column="考场" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TestinfoMap">
+        select
+考试时间开课学院课程名称教学班名称班级组成任课教师考试方式考场校区选课人数已排人数考场
+        from testinfo
+        where  = #{}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TestinfoMap">
+        select
+考试时间开课学院课程名称教学班名称班级组成任课教师考试方式考场校区选课人数已排人数考场
+        from testinfo
+        <where>
+            <if test="考试时间 != null and 考试时间 != ''">
+                and 考试时间 = #{考试时间}
+            </if>
+            <if test="开课学院 != null and 开课学院 != ''">
+                and 开课学院 = #{开课学院}
+            </if>
+            <if test="课程名称 != null and 课程名称 != ''">
+                and 课程名称 = #{课程名称}
+            </if>
+            <if test="教学班名称 != null and 教学班名称 != ''">
+                and 教学班名称 = #{教学班名称}
+            </if>
+            <if test="班级组成 != null and 班级组成 != ''">
+                and 班级组成 = #{班级组成}
+            </if>
+            <if test="任课教师 != null and 任课教师 != ''">
+                and 任课教师 = #{任课教师}
+            </if>
+            <if test="考试方式 != null and 考试方式 != ''">
+                and 考试方式 = #{考试方式}
+            </if>
+            <if test="考场校区 != null and 考场校区 != ''">
+                and 考场校区 = #{考场校区}
+            </if>
+            <if test="选课人数 != null">
+                and 选课人数 = #{选课人数}
+            </if>
+            <if test="已排人数 != null">
+                and 已排人数 = #{已排人数}
+            </if>
+            <if test="考场 != null and 考场 != ''">
+                and 考场 = #{考场}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from testinfo
+        <where>
+            <if test="考试时间 != null and 考试时间 != ''">
+                and 考试时间 = #{考试时间}
+            </if>
+            <if test="开课学院 != null and 开课学院 != ''">
+                and 开课学院 = #{开课学院}
+            </if>
+            <if test="课程名称 != null and 课程名称 != ''">
+                and 课程名称 = #{课程名称}
+            </if>
+            <if test="教学班名称 != null and 教学班名称 != ''">
+                and 教学班名称 = #{教学班名称}
+            </if>
+            <if test="班级组成 != null and 班级组成 != ''">
+                and 班级组成 = #{班级组成}
+            </if>
+            <if test="任课教师 != null and 任课教师 != ''">
+                and 任课教师 = #{任课教师}
+            </if>
+            <if test="考试方式 != null and 考试方式 != ''">
+                and 考试方式 = #{考试方式}
+            </if>
+            <if test="考场校区 != null and 考场校区 != ''">
+                and 考场校区 = #{考场校区}
+            </if>
+            <if test="选课人数 != null">
+                and 选课人数 = #{选课人数}
+            </if>
+            <if test="已排人数 != null">
+                and 已排人数 = #{已排人数}
+            </if>
+            <if test="考场 != null and 考场 != ''">
+                and 考场 = #{考场}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="" useGeneratedKeys="true">
+        insert into testinfo(考试时间开课学院课程名称教学班名称班级组成任课教师考试方式考场校区选课人数已排人数考场)
+        values (#{考试时间}#{开课学院}#{课程名称}#{教学班名称}#{班级组成}#{任课教师}#{考试方式}#{考场校区}#{选课人数}#{已排人数}#{考场})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="" useGeneratedKeys="true">
+        insert into testinfo(考试时间开课学院课程名称教学班名称班级组成任课教师考试方式考场校区选课人数已排人数考场)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.考试时间}#{entity.开课学院}#{entity.课程名称}#{entity.教学班名称}#{entity.班级组成}#{entity.任课教师}#{entity.考试方式}#{entity.考场校区}#{entity.选课人数}#{entity.已排人数}#{entity.考场})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="" useGeneratedKeys="true">
+        insert into testinfo(考试时间开课学院课程名称教学班名称班级组成任课教师考试方式考场校区选课人数已排人数考场)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.考试时间}#{entity.开课学院}#{entity.课程名称}#{entity.教学班名称}#{entity.班级组成}#{entity.任课教师}#{entity.考试方式}#{entity.考场校区}#{entity.选课人数}#{entity.已排人数}#{entity.考场})
+        </foreach>
+        on duplicate key update
+考试时间 = values(考试时间)开课学院 = values(开课学院)课程名称 = values(课程名称)教学班名称 = values(教学班名称)班级组成 = values(班级组成)任课教师 = values(任课教师)考试方式 = values(考试方式)考场校区 = values(考场校区)选课人数 = values(选课人数)已排人数 = values(已排人数)考场 = values(考场)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update testinfo
+        <set>
+            <if test="考试时间 != null and 考试时间 != ''">
+                考试时间 = #{考试时间},
+            </if>
+            <if test="开课学院 != null and 开课学院 != ''">
+                开课学院 = #{开课学院},
+            </if>
+            <if test="课程名称 != null and 课程名称 != ''">
+                课程名称 = #{课程名称},
+            </if>
+            <if test="教学班名称 != null and 教学班名称 != ''">
+                教学班名称 = #{教学班名称},
+            </if>
+            <if test="班级组成 != null and 班级组成 != ''">
+                班级组成 = #{班级组成},
+            </if>
+            <if test="任课教师 != null and 任课教师 != ''">
+                任课教师 = #{任课教师},
+            </if>
+            <if test="考试方式 != null and 考试方式 != ''">
+                考试方式 = #{考试方式},
+            </if>
+            <if test="考场校区 != null and 考场校区 != ''">
+                考场校区 = #{考场校区},
+            </if>
+            <if test="选课人数 != null">
+                选课人数 = #{选课人数},
+            </if>
+            <if test="已排人数 != null">
+                已排人数 = #{已排人数},
+            </if>
+            <if test="考场 != null and 考场 != ''">
+                考场 = #{考场},
+            </if>
+        </set>
+        where  = #{}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from testinfo where  = #{}
+    </delete>
+
+</mapper>
+

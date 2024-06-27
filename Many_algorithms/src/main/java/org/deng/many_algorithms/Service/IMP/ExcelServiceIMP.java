@@ -4,13 +4,17 @@ import org.deng.many_algorithms.Service.ExcelService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 //@Service的作用是将一个类标记为Spring的Bean，使其成为Spring IoC容器中的一个Bean，并可以被Spring的依赖注入功能所使用。
 @Service
@@ -100,4 +104,102 @@ public class ExcelServiceIMP implements ExcelService {
         file.close();
         return data;
     }
+
+
+
+
+    public List<Map<String, String>> readExcelMapFromFile(File file) throws IOException {
+        List<Map<String, String>> data = new ArrayList<>();
+
+        FileInputStream fis = new FileInputStream(file);
+        Workbook workbook = new XSSFWorkbook(fis);
+        Sheet sheet = workbook.getSheetAt(0);
+
+        // 获取第一行作为字段名
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) {
+            workbook.close();
+            fis.close();
+            return data; // 如果没有头行，返回空数据
+        }
+        List<String> headers = new ArrayList<>();
+        for (Cell cell : headerRow) {
+            headers.add(cell.toString().trim());
+        }
+
+        // 读取数据行
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) {
+                continue; // 跳过空行
+            }
+            Map<String, String> rowData = new HashMap<>();
+            boolean rowHasData = false; // 检查行是否有数据
+            for (int j = 0; j < headers.size(); j++) {
+                Cell cell = row.getCell(j);
+                if (cell != null && cell.getCellType() != CellType.BLANK) {
+                    rowData.put(headers.get(j), cell.toString().trim());
+                    rowHasData = true;
+                }
+            }
+            if (rowHasData) {
+                data.add(rowData);
+            }
+        }
+
+        workbook.close();
+        fis.close();
+        return data;
+    }
+
+    /**
+     * @param file
+     * @return
+     */
+    @Override
+    public List<Map<String, String>> readExcelMapFromMultipartFile(MultipartFile multipartFile) throws IOException {
+        List<Map<String, String>> data = new ArrayList<>();
+
+        InputStream inputStream = multipartFile.getInputStream();
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+
+        // 获取第一行作为字段名
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) {
+            workbook.close();
+            inputStream.close();
+            return data; // 如果没有头行，返回空数据
+        }
+        List<String> headers = new ArrayList<>();
+        for (Cell cell : headerRow) {
+            headers.add(cell.toString().trim());
+        }
+
+        // 读取数据行
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) {
+                continue; // 跳过空行
+            }
+            Map<String, String> rowData = new HashMap<>();
+            boolean rowHasData = false; // 检查行是否有数据
+            for (int j = 0; j < headers.size(); j++) {
+                Cell cell = row.getCell(j);
+                if (cell != null && cell.getCellType() != CellType.BLANK) {
+                    rowData.put(headers.get(j), cell.toString().trim());
+                    rowHasData = true;
+                }
+            }
+            if (rowHasData) {
+                data.add(rowData);
+            }
+        }
+
+        workbook.close();
+        inputStream.close();
+        return data;
+    }
+
+
 }
