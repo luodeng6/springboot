@@ -86,7 +86,7 @@
                                           :on-preview="handlePreview"： 点击预览图片
                                           :on-remove="handleRemove"： 点击删除图片
                                           :file-list="fileList"： 上传的文件列表
-                                           ref="upload": 上传组件的引用->使 this.$refs.upload 生效
+                                           ref="upload": 上传组件的引用->使 this.$refs.upload 生效=>ref="upload": 使用 Vue.js 的 ref 属性来引用这个 el-upload 组件，这样可以在脚本中通过 this.$refs.upload 访问它,当 auto-upload 设置为 false 时，文件选择后不会自动上传。需要手动调用 submit 方法来触发上传操作,所以可以用this.$refs.upload.submit来提交上传！
                                            :on-change-> 上传文件改变时触发的事件
                                       -->
                                     <el-upload
