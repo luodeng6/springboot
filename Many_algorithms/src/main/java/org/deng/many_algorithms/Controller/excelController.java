@@ -42,6 +42,10 @@ public class excelController {
             result_map.put("dataSize", dataList.size());
             result_map.put("data", dataList);
 
+            System.out.println("文件名：" + file.getOriginalFilename());
+            System.out.println("文件大小：" + file.getSize());
+            System.out.println("数据行数：" + dataList.size());
+
             //保存文件到本地
             //String filePath = System.getProperty("user.dir") + "/" + file.getOriginalFilename();
             //file.transferTo(new File(filePath));

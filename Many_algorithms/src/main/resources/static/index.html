@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>excel上传实验</title>
+    <meta charset="UTF-8">
+    <title>excel上传实验</title>
     <!-- Layui CSS -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/layui/2.6.8/css/layui.min.css">
     <!-- Bootstrap CSS -->
@@ -11,18 +12,78 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
-	<h1>Welcome to Spring Boot</h1>
+<div id="app">
 
+    <h1>Welcome to Spring Boot</h1>
 
-    <!-- jQuery -->
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <!-- Vue.js -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+    打开图片上传模态框
+</button>
+    <!--
+     :auto-upload="false":不自动上传，需要手动点击上传按钮
+      name="files" ： 上传的键名，服务器接收的键名
+      :multiple="true"： 允许多选
+      :on-preview="handlePreview"： 点击预览图片
+      :on-remove="handleRemove"： 点击删除图片
+      :file-list="fileList"： 上传的文件列表
+      ref="upload": 上传组件的引用->使 this.$refs.upload 生效
+      :on-change-> 上传文件改变时触发的事件
+      :drag="true"： 允许拖拽上传
+      :accept="'.jpg,.png'"： 允许上传的图片类型
+      :limit="1"： 限制上传数量为1
+      -->
+    <!-- 模态框 -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <!-- 模态框内容 -->
+            <div class="modal-content">
+                <!--模态框标题-->
+                <div class="modal-header">
+                    <h5 class="modal-title">图片上传</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- 模态框内容 -->
+                <div class="modal-body">
 
-    <!-- 引入组件库 -->
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+                    <el-upload
+                            class="upload-demo"
+                            :drag="true"
+                            accept=".xls,.xlsx"
+                            action="/readExcelByupload"
+                            :multiple="false"
+                            name="file"
+                            ref="upload"
+                            :auto-upload="false"
+                            :on-change="handleUploadChange"
+                            :on-success="handleUploadSuccess"
+                            :on-error="handleUploadError"
+                            :before-upload="before_upload"
+                            :on-exceed="on_exceed"
+                            :limit="1">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+                    </el-upload>
 
-    <!-- Axios -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- 引入Bootstrap的JS文件（包含Popper.js） -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Vue.js -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>

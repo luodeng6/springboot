@@ -1,12 +1,16 @@
 package org.deng.many_algorithms;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.deng.many_algorithms.Service.CodeService;
 import org.deng.many_algorithms.Service.ExcelService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class ManyAlgorithmsApplicationTests {
@@ -36,5 +40,16 @@ class ManyAlgorithmsApplicationTests {
         java.io.File file = new java.io.File(filePath);
         System.out.println(excelService.readExcelMapFromFile(file));
     }
+
+    @Autowired
+    CodeService codeService;
+
+
+    // 测试验证码文件对象生成
+    @Test
+    void TestReadExcelFileByFileMap() throws IOException, InvalidFormatException {
+        System.out.println(codeService.generateCaptcha(6, 150, 150));
+    }
+
 
 }
