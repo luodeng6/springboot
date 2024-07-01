@@ -1,4 +1,5 @@
 package org.deng.fileupload.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.deng.fileupload.Pojo.Img;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -27,5 +28,11 @@ public interface ImgMapper {
 
     // 通过id 获取一个图片
     Img getImgById(int id);
+
+    //分页查询图片 根据每一页的数量和页码查询 -> 自动映射变量
+    // 注意：这里的offset参数是从0开始的，所以要减去1
+    // SELECT * FROM img LIMIT @pageSize OFFSET (@pageNum - 1) * @pageSize;
+    List<Img> getImgByPage( @Param("pageSize") int pageSize,@Param("offset") int offset);
+
 
 }

@@ -123,4 +123,18 @@ class FileuploadApplicationTests {
             e.printStackTrace();
         }
     }
+
+
+    // 测试mysql分页查询
+    @Test
+    void checkMysqlPage()  {
+
+        int pagSize = 10;//每页显示10条数据
+        int pageNum = 1;//第一页
+        //计算偏移量:
+        int offset = (pageNum - 1) * pagSize;
+        System.out.println(imgMapper.getImgByPage(pagSize, offset));
+
+    }
+
 }

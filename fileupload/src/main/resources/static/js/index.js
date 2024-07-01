@@ -265,6 +265,13 @@ new Vue({
             const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv', '.webm', '.mpeg', '.mpg'];
             const fileExtension = filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2).toLowerCase();
             return videoExtensions.includes(`.${fileExtension}`);
+        },
+        handleKeydown(event) {
+            if (event.key === "Enter") {
+                this.message = "You pressed Enter on the image!";
+            } else {
+                this.message = `You pressed ${event.key} on the image.`;
+            }
         }
     },
 

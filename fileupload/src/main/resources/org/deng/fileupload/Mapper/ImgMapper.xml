@@ -53,6 +53,12 @@
     <select id="getImgById" resultType="org.deng.fileupload.Pojo.Img">
         select * from img where id = #{id}
     </select>
+    <select id="getImgByPage" resultType="org.deng.fileupload.Pojo.Img">
+
+
+        SELECT * FROM img LIMIT #{pageSize} OFFSET #{offset} ;
+
+    </select>
 
 
 </mapper>

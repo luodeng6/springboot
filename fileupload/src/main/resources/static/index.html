@@ -33,6 +33,12 @@
             /*box-sizing: border-box;*/
             /*margin-right: 20px;*/
         }
+        .imgShow:hover{
+            width: 109%;
+        }
+        .imgShow{
+            transition: all 2s ease;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +65,7 @@
                     <div class="grid-container" id="imageGrid">
                         <div  v-if="isImage(item.name)||isVideo(item.name)" v-for="(item,index) in imglist" :key="index" class="image-item">
 
-                            <img  @contextmenu="downloadImg(item.id)" v-if="isImage(item.name)" :src="item.url" alt="billie eilish" @dblclick="showImg(item.url)">
+                            <img  tabindex="index"   @keydown="handleKeydown" class="imgShow"  @contextmenu="downloadImg(item.id)" v-if="isImage(item.name)" :src="item.url" alt="billie eilish" @dblclick="showImg(item.url)">
 
                             <video  v-else style="width: 100%;height: 100%;" controls>
                                 <source :src="item.url" type="video/mp4">
